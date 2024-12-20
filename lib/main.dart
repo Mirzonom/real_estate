@@ -4,6 +4,7 @@ import 'package:real_estate_app/theme/app_theme.dart';
 import 'package:real_estate_app/screens/property_list_screen.dart';
 import 'package:real_estate_app/screens/map_screen.dart';
 import 'package:real_estate_app/screens/filter_screen.dart';
+import 'package:real_estate_app/screens/add_property_screen.dart';
 import 'package:real_estate_app/controllers/filter_controller.dart';
 
 void main() {
@@ -61,7 +62,12 @@ class HomePage extends StatelessWidget {
       body: const PropertyListScreen(),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
-          // TODO: Добавление новой недвижимости
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => AddPropertyScreen(),
+            ),
+          );
         },
         child: const Icon(Icons.add),
       ),
