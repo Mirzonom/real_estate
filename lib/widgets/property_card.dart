@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:real_estate_app/models/property.dart';
+import 'package:real_estate_app/screens/property_detail_screen.dart';
 import 'package:intl/intl.dart';
+import 'dart:io';
 
 class PropertyCard extends StatelessWidget {
   final Property property;
@@ -20,108 +22,117 @@ class PropertyCard extends StatelessWidget {
 
     return Card(
       margin: const EdgeInsets.only(bottom: 16),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          // Изображение недвижимости
-          if (property.images.isNotEmpty)
+      child: InkWell(
+        onTap: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => PropertyDetailScreen(property: property),
+            ),
+          );
+        },
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
             AspectRatio(
               aspectRatio: 16 / 9,
-              child: Image.network(
-                property.images.first,
-                fit: BoxFit.cover,
-              ),
-            ),
-
-          Padding(
-            padding: const EdgeInsets.all(16),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                // Заголовок и цена
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Expanded(
-                      child: Text(
-                        property.title,
-                        style: Theme.of(context).textTheme.titleLarge,
-                        maxLines: 2,
-                        overflow: TextOverflow.ellipsis,
+              child: property.images.isNotEmpty
+                  ? Container(
+                      decoration: BoxDecoration(
+                        image: DecorationImage(
+                          image: property.images.first.startsWith('http')
+                              ? NetworkImage(property.images.first) as ImageProvider
+                              : FileImage(File(property.images.first)),
+                          fit: BoxFit.cover,
+                        ),
                       ),
+                    )
+                  : Container(
+                      color: Colors.grey[300],
+                      child: const Icon(Icons.home, size: 50),
                     ),
+            ),
+            Padding(
+              padding: const EdgeInsets.all(16),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    property.title,
+                    style: Theme.of(context).textTheme.titleLarge,
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                  const SizedBox(height: 8),
+                  if (property.isForSale)
                     Text(
                       currencyFormatter.format(property.price),
-                      style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                            color: Theme.of(context).primaryColor,
-                            fontWeight: FontWeight.bold,
-                          ),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 8),
-
-                // Адрес
-                Row(
-                  children: [
-                    const Icon(Icons.location_on, size: 16),
-                    const SizedBox(width: 4),
-                    Expanded(
-                      child: Text(
-                        '${property.city}, ${property.address}',
-                        style: Theme.of(context).textTheme.bodyMedium,
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
+                      style: const TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
                       ),
                     ),
-                  ],
-                ),
-                const SizedBox(height: 8),
-
-                // Основные характеристики
-                Wrap(
-                  spacing: 16,
-                  runSpacing: 8,
-                  children: [
-                    _buildFeatureChip(
-                      context,
-                      Icons.apartment,
-                      '${property.numberOfRooms} комн.',
+                  if (property.isForRent && property.rentPrice != null)
+                    Text(
+                      '${currencyFormatter.format(property.rentPrice)} / месяц',
+                      style: const TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w500,
+                      ),
                     ),
-                    _buildFeatureChip(
-                      context,
-                      Icons.construction,
-                      property.constructionStage.toString().split('.').last,
-                    ),
-                    _buildFeatureChip(
-                      context,
-                      Icons.category,
-                      property.propertyClass.toString().split('.').last,
-                    ),
-                  ],
-                ),
-              ],
+                  const SizedBox(height: 8),
+                  Row(
+                    children: [
+                      const Icon(Icons.location_on, size: 16),
+                      const SizedBox(width: 4),
+                      Expanded(
+                        child: Text(
+                          '${property.city}, ${property.address}',
+                          style: Theme.of(context).textTheme.bodyMedium,
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 8),
+                  Row(
+                    children: [
+                      _buildFeatureChip(
+                        context,
+                        '${property.numberOfRooms} комн.',
+                      ),
+                      const SizedBox(width: 8),
+                      if (property.isInstallmentAvailable)
+                        _buildFeatureChip(
+                          context,
+                          'Рассрочка',
+                          color: Colors.green,
+                        ),
+                    ],
+                  ),
+                ],
+              ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
 
-  Widget _buildFeatureChip(BuildContext context, IconData icon, String label) {
+  Widget _buildFeatureChip(BuildContext context, String label, {Color? color}) {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
       decoration: BoxDecoration(
-        color: Theme.of(context).primaryColor.withOpacity(0.1),
-        borderRadius: BorderRadius.circular(16),
+        color: color ?? Theme.of(context).primaryColor.withOpacity(0.1),
+        borderRadius: BorderRadius.circular(4),
       ),
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Icon(icon, size: 16),
-          const SizedBox(width: 4),
-          Text(label, style: Theme.of(context).textTheme.bodySmall),
-        ],
+      child: Text(
+        label,
+        style: TextStyle(
+          fontSize: 12,
+          color: color ?? Theme.of(context).primaryColor,
+        ),
       ),
     );
   }

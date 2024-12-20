@@ -5,10 +5,13 @@ import 'package:real_estate_app/screens/property_list_screen.dart';
 import 'package:real_estate_app/screens/map_screen.dart';
 import 'package:real_estate_app/screens/filter_screen.dart';
 import 'package:real_estate_app/screens/add_property_screen.dart';
+import 'package:real_estate_app/screens/favorites_screen.dart';
 import 'package:real_estate_app/controllers/filter_controller.dart';
+import 'package:real_estate_app/controllers/favorites_controller.dart';
 
 void main() {
   Get.put(FilterController());
+  Get.put(FavoritesController());
   runApp(const MyApp());
 }
 
@@ -42,6 +45,17 @@ class HomePage extends StatelessWidget {
                 context,
                 MaterialPageRoute(
                   builder: (context) => const MapScreen(),
+                ),
+              );
+            },
+          ),
+          IconButton(
+            icon: const Icon(Icons.favorite),
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => const FavoritesScreen(),
                 ),
               );
             },
