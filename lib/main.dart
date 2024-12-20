@@ -6,12 +6,15 @@ import 'package:real_estate_app/screens/map_screen.dart';
 import 'package:real_estate_app/screens/filter_screen.dart';
 import 'package:real_estate_app/screens/add_property_screen.dart';
 import 'package:real_estate_app/screens/favorites_screen.dart';
+import 'package:real_estate_app/screens/search_screen.dart';
 import 'package:real_estate_app/controllers/filter_controller.dart';
 import 'package:real_estate_app/controllers/favorites_controller.dart';
+import 'package:real_estate_app/controllers/search_controller.dart';
 
 void main() {
   Get.put(FilterController());
   Get.put(FavoritesController());
+  Get.put(PropertySearchController());
   runApp(const MyApp());
 }
 
@@ -38,6 +41,17 @@ class HomePage extends StatelessWidget {
       appBar: AppBar(
         title: const Text('Недвижимость'),
         actions: [
+          IconButton(
+            icon: const Icon(Icons.search),
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => const SearchScreen(),
+                ),
+              );
+            },
+          ),
           IconButton(
             icon: const Icon(Icons.map),
             onPressed: () {
